@@ -1,5 +1,6 @@
 # SDL-Game-Template
 Made with SDL2.
+Thank you, SDL. https://www.libsdl.org/
 
 A template that opens a window with SDL2.
 
