@@ -5,10 +5,14 @@
 #include <SDL2/SDL_ttf.h>
 // #include <SDL2/SDL_image.h>
 
-#include "headers/structs.h"
+#include "animation.h"
 
 void load_game(GameState *game)
 {
+    game->animated_rect.x = 200;
+    game->animated_rect.y = 200;
+    game->animated_rect.w = 40;
+    game->animated_rect.h = 40;
     return;
 }
 
@@ -54,7 +58,9 @@ int listen_for_events(SDL_Window *window, GameState *game, float dt)
                 {
                     case SDL_BUTTON_LEFT:
                     {
-                        printf("Mouse click\n");
+                        draw_linear_equation(game, 2, 32);
+                        
+                                  
                     }
                 }
             }
@@ -115,16 +121,28 @@ void render(SDL_Renderer *renderer, GameState *game)
         Renders everything and "puts it on the screen".
         Use every frame at the end of this function.
     */
+
+    // Background
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
+
+    /*
+     // Animated rect
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_Rect anim_rect = {game->animated_rect.x,
+                          game->animated_rect.y,
+                          game->animated_rect.w,
+                          game->animated_rect.h};
+    SDL_RenderFillRect(renderer, &anim_rect);
+    */
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    draw_linear_equation(game, 2, 32);
+
     SDL_RenderPresent(renderer);
 }
 
 void process(GameState *game, float dt)
 {
-    /*
-    Every game has a process. I'll leave this blank for now.
-    */
     return;
 }
 
@@ -142,8 +160,8 @@ int main(int argc, char* argv[])
     SDL_Renderer *renderer = NULL;
 
     // Init settings
-    game_state.settings.display_width = 600;
-    game_state.settings.display_height = 480;
+    game_state.settings.display_width = 800;
+    game_state.settings.display_height = 600;
     
     // Init SDL2
     SDL_Init(SDL_INIT_VIDEO);
