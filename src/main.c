@@ -9,10 +9,20 @@
 
 void load_game(GameState *game)
 {
+    // Init settings
+    game->settings.display_width = 800;
+    game->settings.display_height = 600;
+
     game->animated_rect.x = 200;
     game->animated_rect.y = 200;
     game->animated_rect.w = 40;
     game->animated_rect.h = 40;
+
+    // Coordinate system range
+    game->coord_sys.min_x = -(game->settings.display_width / 2);
+    game->coord_sys.max_x = (game->settings.display_width / 2);
+    game->coord_sys.min_y = -(game->settings.display_height / 2);
+    game->coord_sys.max_y = (game->settings.display_height / 2);
     return;
 }
 
@@ -58,9 +68,7 @@ int listen_for_events(SDL_Window *window, GameState *game, float dt)
                 {
                     case SDL_BUTTON_LEFT:
                     {
-                        draw_linear_equation(game, 2, 32);
-                        
-                                  
+                        done = 0;                                  
                     }
                 }
             }
@@ -136,7 +144,8 @@ void render(SDL_Renderer *renderer, GameState *game)
     SDL_RenderFillRect(renderer, &anim_rect);
     */
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    draw_linear_equation(game, 2, 32);
+    draw_coord_sys(game);
+    draw_linear_equation(game, 2, 32, 0);
 
     SDL_RenderPresent(renderer);
 }
@@ -159,9 +168,8 @@ int main(int argc, char* argv[])
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
 
-    // Init settings
-    game_state.settings.display_width = 800;
-    game_state.settings.display_height = 600;
+    // Load
+    load_game(&game_state);
     
     // Init SDL2
     SDL_Init(SDL_INIT_VIDEO);
@@ -181,8 +189,7 @@ int main(int argc, char* argv[])
     // Init SDL_ttf (for text fonts)
     TTF_Init();
 
-    // Load your own assets
-    load_game(&game_state);
+    
     
     /*********
     EVENT LOOP
