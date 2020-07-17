@@ -1,8 +1,8 @@
-# SDL-Game-Template
+# Plot-Graphs
 Made with SDL2.
 Thank you, SDL. https://www.libsdl.org/
 
-A template that opens a window with SDL2.
+Plot graphs in a standard cartesian coordinate system.
 
 How to set up SDL2:
 
