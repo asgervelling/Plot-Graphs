@@ -6,6 +6,7 @@ typedef struct
 {
     int min_x, max_x;
     int min_y, max_y;
+    float zoom_x, zoom_y;
 } Coordinate_System;
 
 typedef struct
@@ -37,5 +38,5 @@ typedef struct
     Coordinate_System coord_sys;
     Animation anim;
     SDL_Renderer *renderer;
-} GameState;
+} State;
 #endif

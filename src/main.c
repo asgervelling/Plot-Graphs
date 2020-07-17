@@ -7,26 +7,27 @@
 
 #include "animation.h"
 
-void load_game(GameState *game)
+void load_game(State *state)
 {
     // Init settings
-    game->settings.display_width = 800;
-    game->settings.display_height = 600;
+    state->settings.display_width = 800;
+    state->settings.display_height = 600;
 
-    game->animated_rect.x = 200;
-    game->animated_rect.y = 200;
-    game->animated_rect.w = 40;
-    game->animated_rect.h = 40;
+    state->animated_rect.x = 200;
+    state->animated_rect.y = 200;
+    state->animated_rect.w = 40;
+    state->animated_rect.h = 40;
 
     // Coordinate system range
-    game->coord_sys.min_x = -(game->settings.display_width / 2);
-    game->coord_sys.max_x = (game->settings.display_width / 2);
-    game->coord_sys.min_y = -(game->settings.display_height / 2);
-    game->coord_sys.max_y = (game->settings.display_height / 2);
+    state->coord_sys.min_x = -(state->settings.display_width / 2);
+    state->coord_sys.max_x = (state->settings.display_width / 2);
+    state->coord_sys.min_y = -(state->settings.display_height / 2);
+    state->coord_sys.max_y = (state->settings.display_height / 2);
+    state->coord_sys.zoom_x = 1;
     return;
 }
 
-int listen_for_events(SDL_Window *window, GameState *game, float dt)
+int listen_for_events(SDL_Window *window, State *state, float dt)
 {
     SDL_Event event;
     int done = 0;
@@ -57,6 +58,20 @@ int listen_for_events(SDL_Window *window, GameState *game, float dt)
                     {
                         done = 1;
                     }
+                    break;
+                    
+                    case SDLK_UP:
+                    {
+                        // Zoom in (x)
+                        zoom_in(state);
+                    }
+                    break;
+
+                    case SDLK_DOWN:
+                    {
+                        // Zoom out (x)
+                        zoom_out(state);
+                    }
                 }
             }
             break;
@@ -82,88 +97,41 @@ int listen_for_events(SDL_Window *window, GameState *game, float dt)
             break;
         }
     }
-    /*
-    // Keyboard states:
-    // What happens when you hold down a button.
-
-    const Uint8 *key_state = SDL_GetKeyboardState(NULL);
-    if(key_state[SDL_SCANCODE_LEFT])                    // left
-    {
-        left_key(game, dt);
-
-    }
-    if(key_state[SDL_SCANCODE_RIGHT])                   // right
-    {
-        right_key(game, dt);
-    }
-
-    if(key_state[SDL_SCANCODE_DOWN])                   // right
-    {
-        down_key(game, dt);
-    }
-    */
 
     return done;
 }
 
-void render(SDL_Renderer *renderer, GameState *game)
+void render(SDL_Renderer *renderer, State *state)
 {
-    /*
-    Render stuff here. Some useful functions include:
-
-    SDL_SetRenderDrawColor(SDL_Renderer * renderer,
-                                           Uint8 r, Uint8 g, Uint8 b,
-                                           Uint8 a):
-        Sets your current draw color (imagine a paint brush you have dipped in a color)
-    
-    SDL_RenderFillRect(SDL_Renderer * renderer, const SDL_Rect * rect)):
-        Fills an SDL_Rect with whatever color you have chosen.
-    
-    SDL_RenderClear(SDL_Renderer * renderer):
-        Clears the screen (sets the screen color to the chosen color)-
-        Use this every frame.
-
-    and most importantly:
-
-    SDL_RenderPresent(SDL_Renderer * renderer):
-        Renders everything and "puts it on the screen".
-        Use every frame at the end of this function.
-    */
-
     // Background
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
 
-    /*
-     // Animated rect
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_Rect anim_rect = {game->animated_rect.x,
-                          game->animated_rect.y,
-                          game->animated_rect.w,
-                          game->animated_rect.h};
-    SDL_RenderFillRect(renderer, &anim_rect);
-    */
+    // Coordinate system
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    draw_coord_sys(game);
-    draw_linear_equation(game, 2, 32, 0);
+    draw_coord_sys(state);
+
+    // Functions
+    // draw_linear_equation(state, 2, 32, 0);
+    draw_exponential_equation(state, 1, 2, 0); // f(x) = x²
 
     SDL_RenderPresent(renderer);
 }
 
-void process(GameState *game, float dt)
+void process(State *state, float dt)
 {
     return;
 }
 
 int main(int argc, char* argv[])
 {
-    void load_game(GameState *game);
-    int listen_for_events(SDL_Window *window, GameState *game, float dt);
-    void render(SDL_Renderer *renderer, GameState *game);
-    void process(GameState *game, float dt);
+    void load_game(State *state);
+    int listen_for_events(SDL_Window *window, State *state, float dt);
+    void render(SDL_Renderer *renderer, State *state);
+    void process(State *state, float dt);
 
-    // Declare a game state that will be used a lot
-    GameState game_state;
+    // Declare a state state that will be used a lot
+    State game_state;
 
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
