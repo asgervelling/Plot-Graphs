@@ -1,33 +1,22 @@
 #include <stdio.h>
-#include <math.h>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-// #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_image.h>
 
-#include "animation.h"
+#include "structs.h"
+#include "init.h"
+#include "render.h"
+#include "buttons.h"
 
-void load_game(State *state)
+void initialize(State *state, SDL_Renderer *renderer)
 {
-    // Init settings
-    state->settings.display_width = 800;
-    state->settings.display_height = 600;
-
-    state->animated_rect.x = 200;
-    state->animated_rect.y = 200;
-    state->animated_rect.w = 40;
-    state->animated_rect.h = 40;
-
-    // Coordinate system range
-    state->coord_sys.min_x = -(state->settings.display_width / 2);
-    state->coord_sys.max_x = (state->settings.display_width / 2);
-    state->coord_sys.min_y = -(state->settings.display_height / 2);
-    state->coord_sys.max_y = (state->settings.display_height / 2);
-    state->coord_sys.zoom_x = 1;
+    init_font(state);
+    init_GUI(state, renderer);
     return;
 }
 
-int listen_for_events(SDL_Window *window, State *state, float dt)
+int listen_for_events(State *state, SDL_Window *window, float dt)
 {
     SDL_Event event;
     int done = 0;
@@ -62,15 +51,13 @@ int listen_for_events(SDL_Window *window, State *state, float dt)
                     
                     case SDLK_UP:
                     {
-                        // Zoom in (x)
-                        zoom_in(state);
+                        return done;
                     }
                     break;
 
                     case SDLK_DOWN:
                     {
-                        // Zoom out (x)
-                        zoom_out(state);
+                        return done;
                     }
                 }
             }
@@ -107,14 +94,10 @@ void render(SDL_Renderer *renderer, State *state)
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
 
-    // Coordinate system
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    draw_coord_sys(state);
+    // GUI
+    render_GUI(state, renderer);
 
-    // Functions
-    // draw_linear_equation(state, 2, 32, 0);
-    draw_exponential_equation(state, 1, 2, 0); // f(x) = x²
-
+    // Present it all
     SDL_RenderPresent(renderer);
 }
 
@@ -125,39 +108,40 @@ void process(State *state, float dt)
 
 int main(int argc, char* argv[])
 {
-    void load_game(State *state);
-    int listen_for_events(SDL_Window *window, State *state, float dt);
+    void initialize(State *state, SDL_Renderer *renderer);
+    int listen_for_events(State *state, SDL_Window *window, float dt);
     void render(SDL_Renderer *renderer, State *state);
     void process(State *state, float dt);
-
-    // Declare a state state that will be used a lot
-    State game_state;
 
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
 
-    // Load
-    load_game(&game_state);
+    // Declare a state state that will be used a lot
+    State state;
+
+    
     
     // Init SDL2
     SDL_Init(SDL_INIT_VIDEO);
 
     // Create window
-    window = SDL_CreateWindow("Animation Program",
+    window = SDL_CreateWindow("Title",
                               SDL_WINDOWPOS_UNDEFINED,
                               SDL_WINDOWPOS_UNDEFINED,
-                              game_state.settings.display_width,
-                              game_state.settings.display_height,
+                              960,
+                              640,
                               0);
     
     // Create renderer
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    game_state.renderer = renderer;
+    state.renderer = renderer;
+
+    // Init this program
+    initialize(&state, renderer);
 
     // Init SDL_ttf (for text fonts)
     TTF_Init();
 
-    
     
     /*********
     EVENT LOOP
@@ -173,12 +157,12 @@ int main(int argc, char* argv[])
         Uint32 t2 = SDL_GetTicks();
         float dt = (t2 - t1) / 1000.0f;
 
-        if (listen_for_events(window, &game_state, dt) == 1)
+        if (listen_for_events(&state, window, dt) == 1)
         {
             done = 1;
         }
-        render(renderer, &game_state);
-        process(&game_state, dt);
+        render(renderer, &state);
+        process(&state, dt);
 
         // Delta time
         t1 = t2;

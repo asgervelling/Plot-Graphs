@@ -1,42 +1,100 @@
 #ifndef STRUCTS
 #define STRUCTS
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
-typedef struct
-{
-    int min_x, max_x;
-    int min_y, max_y;
-    float zoom_x, zoom_y;
-} Coordinate_System;
-
-typedef struct
-{
-    int display_width, display_height;
-} Settings;
+/**********
+ * GUI
+ * *******/
 
 typedef struct
 {
     int x, y, w, h;
-} Actor;
+} Rect;
 
 typedef struct
 {
-    int current_frame;
-    int current_animation;
-} Animation;
+    Uint8 r, g, b, a;
+} Color;
 
-enum animations
+typedef struct
 {
-    linear
+    SDL_Color black;
+    SDL_Color white;
+    SDL_Color blue;
+} Colors;
+
+typedef struct
+{
+    Rect rect;
+    SDL_Texture *texture;
+} Label;
+
+/**********
+ * BUTTONS
+ * *******/
+
+typedef struct
+{
+    Rect rect;
+    SDL_Texture *texture;
+} Button_IMG;
+
+typedef struct
+{
+    Rect rect;
+    int margin;
+    Label label;
+} Button_TTF;
+
+enum Buttons
+{
+    btn_file,
+    btn_file_open,
+    btn_file_save
 };
 
+/**********
+ * GUI Rectangles
+ * *******/
+
 typedef struct
 {
-    int screen_state;
-    Actor animated_rect;
-    Settings settings;
-    Coordinate_System coord_sys;
-    Animation anim;
+    Rect rect;
+} Container;
+
+typedef struct
+{
+    Rect rect;
+} Graphic_User_Interface;
+
+/**********
+ * ANIMATION
+ * *******/
+typedef struct
+{
+    int frame;
+    int current_anim;
+} Animation_Helper;
+
+/**********
+ * STATE
+ * *******/
+typedef struct
+{
+    // GUI
+    Graphic_User_Interface GUI;
+    Button_TTF buttons[12];
+
+    // Animation
+    Animation_Helper GUI_anim;
+
+    // Font
+    TTF_Font *font;
+
+    // Rendering
     SDL_Renderer *renderer;
+    Colors colors;
 } State;
+
 #endif

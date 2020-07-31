@@ -11,7 +11,7 @@ CXXFLAGS = -std=c11 -Wall
 LDFLAGS = -lSDL2 -lGL -lGLEW -lm -lSDL2_image -lSDL2_ttf
 
 # Makefile settings - Can be customized.
-APPNAME = PlotGraphs
+APPNAME = GUI_Maker
 EXT = .c
 SRCDIR = src
 OBJDIR = obj
